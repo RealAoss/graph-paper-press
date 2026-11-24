@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Graph Paper Press</title><style>*{box-sizing:border-box}body{background:#f2f0e9;color:#26343b;font:16px/1.55 'Segoe UI',sans-serif;margin:0}main{max-width:760px;background:white;margin:4vh auto;padding:clamp(18px,5vw,48px);border-top:6px solid #28605d}h1{font:700 clamp(32px,5vw,48px)/1.05 Georgia,serif;margin:0 0 16px}label{display:block;font-weight:600;margin:12px 0}small{display:block;font-weight:400}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}textarea,input,select{display:block;width:100%;font:inherit;padding:8px;margin-top:4px;border:1px solid #849897;border-radius:4px}input[type=color]{height:44px}button{padding:12px 18px;background:#205856;color:white;border:0;border-radius:5px;font:inherit;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}#paper{max-width:420px;margin:20px auto;border:1px solid #899695}#paper svg{display:block;width:100%}li{padding:4px}section{margin:20px 0}@media print{body,main{background:white;margin:0;padding:0;border:0}button,.grid,label,#go,main>p{display:none}}</style></head><body><main><h1>Graph Paper Press</h1><p>Generate graph or dot paper in millimeters for A4 or US Letter, then print a sheet or save it to PDF.</p><div class="grid"><label>Sheet size<select id="size"><option>A4</option><option>US Letter</option></select></label><label>Pattern<select id="pattern"><option>Lines</option><option>Dots</option></select></label><label>Spacing (mm)<select id="spacing"><option>3</option><option selected>5</option><option>10</option></select></label><label>Ink color<input type="color" id="ink" value="#719388"></label></div><button id="print">Print sheet</button><p>For accurate spacing, print at 100% scale with browser headers and footers off.</p><div id="paper"></div></main><script>
+'use strict';
+const $=id=>document.getElementById(id);
+
+const rule=document.createElement('style');document.head.append(rule);
+function sheet(){
+  const [w,h]=$('size').value==='A4'?[210,297]:[215.9,279.4];
+  const s=Number($('spacing').value),color=$('ink').value,mark=$('pattern').value==='Lines'
+    ?'<path d="M '+s+' 0 H 0 V '+s+'" fill="none" stroke="'+color+'" stroke-width="0.32"/>'
+    :'<circle cx="'+s/2+'" cy="'+s/2+'" r="0.28" fill="'+color+'"/>';
+  $('paper').innerHTML='<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Printable grid" viewBox="0 0 '+w+' '+h+'"><defs><pattern id="tile" width="'+s+'" height="'+s+'" patternUnits="userSpaceOnUse">'+mark+'</pattern></defs><rect width="100%" height="100%" fill="white"/><rect x="10" y="10" width="'+(w-20)+'" height="'+(h-20)+'" fill="url(#tile)"/></svg>';
+  rule.textContent='@page{size:'+w+'mm '+h+'mm;margin:0}@media print{body,main,#paper{margin:0;padding:0;border:0;max-width:none;box-shadow:none}main>:not(#paper){display:none}#paper svg{display:block;width:'+w+'mm;height:'+h+'mm}}';
+}
+document.addEventListener('input',sheet);$('print').onclick=()=>print();sheet();
+</script></body></html>
